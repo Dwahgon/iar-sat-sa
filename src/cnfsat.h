@@ -1,5 +1,5 @@
 #ifndef CNF_SAT_H
-#define CNF_SAT
+#define CNF_SAT_H
 
 #include <ostream>
 #include <string>
@@ -9,7 +9,7 @@ namespace cnfsat {
 
 class SATComponent {
 public:
-  virtual bool resolve(bool *values) = 0;
+  virtual bool resolve(const std::vector<bool> &values) = 0;
 };
 
 class Literal : SATComponent {
@@ -17,21 +17,23 @@ public:
   int i;
   bool negated;
   Literal(int i, bool negated);
-  bool resolve(bool *values);
+  bool resolve(const std::vector<bool> &values);
 };
 
 class Clause : SATComponent {
 public:
   std::vector<Literal> literals;
   Clause(std::vector<Literal> literals);
-  bool resolve(bool *values);
+  bool resolve(const std::vector<bool> &values);
 };
 
 class Formula : SATComponent {
 public:
   std::vector<Clause> clauses;
   Formula(std::vector<Clause> clauses);
-  bool resolve(bool *values);
+  bool resolve(const std::vector<bool> &values);
+  double objectiveFunction(const std::vector<bool> &values);
+  std::vector<bool> neighborhoodFunction(const std::vector<bool> &values);
 };
 
 } // namespace cnfsat
