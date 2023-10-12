@@ -8,9 +8,33 @@ template <typename T>
 using objectiveFunction = std::function<double(const std::vector<T> &)>;
 
 template <typename T>
-using neighborghoodFunction = std::function<std::vector<T>(const std::vector<T> &)>;
+using neighborhoodFunction = std::function<std::vector<T>(const std::vector<T> &)>;
+
+using coolingSchedule = std::function<double(double T0, double TN, unsigned int N, unsigned int i)>;
 
 template <typename T>
-std::vector<T> sa(objectiveFunction<T> f, neighborghoodFunction<T> n, double a, unsigned int SAmax, double T0, std::vector<T> s);
+class SimulatedAnnealing
+{
+    objectiveFunction<T> f;
+    neighborhoodFunction<T> n;
+    coolingSchedule c;
+    double T0, TN;
+    unsigned long SAmax, N;
+
+public:
+    SimulatedAnnealing(objectiveFunction<T> f, neighborhoodFunction<T> n, coolingSchedule c, double T0, double TN, unsigned long SAmax, unsigned long N);
+    std::vector<T> optimize(std::vector<T> s);
+};
+
+double coolingSchedule0(double T0, double TN, unsigned int N, unsigned int i);
+double coolingSchedule1(double T0, double TN, unsigned int N, unsigned int i);
+double coolingSchedule2(double T0, double TN, unsigned int N, unsigned int i);
+double coolingSchedule3(double T0, double TN, unsigned int N, unsigned int i);
+double coolingSchedule4(double T0, double TN, unsigned int N, unsigned int i);
+double coolingSchedule5(double T0, double TN, unsigned int N, unsigned int i);
+double coolingSchedule6(double T0, double TN, unsigned int N, unsigned int i);
+double coolingSchedule7(double T0, double TN, unsigned int N, unsigned int i);
+double coolingSchedule8(double T0, double TN, unsigned int N, unsigned int i);
+double coolingSchedule9(double T0, double TN, unsigned int N, unsigned int i);
 
 #endif
