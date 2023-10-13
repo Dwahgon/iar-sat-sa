@@ -5,40 +5,38 @@
 #include <string>
 #include <vector>
 
-namespace cnfsat {
+namespace cnfsat
+{
 
-class SATComponent {
-public:
-  virtual bool resolve(const std::vector<bool> &values) = 0;
-};
+  class SATComponent
+  {
+  public:
+    virtual bool resolve(const std::vector<bool> &values) = 0;
+  };
 
-class Literal : SATComponent {
-public:
-  int i;
-  bool negated;
-  Literal(int i, bool negated);
-  bool resolve(const std::vector<bool> &values);
-};
+  class Clause : SATComponent
+  {
+  public:
+    std::vector<int> literals;
+    Clause(const std::vector<int> &literals);
+    bool resolve(const std::vector<bool> &values);
+  };
 
-class Clause : SATComponent {
-public:
-  std::vector<Literal> literals;
-  Clause(std::vector<Literal> literals);
-  bool resolve(const std::vector<bool> &values);
-};
-
-class Formula : SATComponent {
-public:
-  std::vector<Clause> clauses;
-  Formula(std::vector<Clause> clauses);
-  bool resolve(const std::vector<bool> &values);
-  double objectiveFunction(const std::vector<bool> &values);
-  std::vector<bool> neighborhoodFunction(const std::vector<bool> &values);
-};
+  class Formula : SATComponent
+  {
+  public:
+    const unsigned int nVars;
+    std::vector<Clause> clauses;
+    Formula(const std::vector<Clause> &clauses, unsigned int n);
+    bool resolve(const std::vector<bool> &values);
+    double objectiveFunction(const std::vector<bool> &values);
+    std::vector<bool> neighborhoodFunction(const std::vector<bool> &values);
+  };
 
 } // namespace cnfsat
-std::ostream &operator<<(std::ostream &strm, const cnfsat::Literal &a);
 std::ostream &operator<<(std::ostream &strm, const cnfsat::Clause &a);
 std::ostream &operator<<(std::ostream &strm, const cnfsat::Formula &a);
+cnfsat::Formula &operator<<(cnfsat::Formula &f, const cnfsat::Clause &c);
+cnfsat::Clause &operator<<(cnfsat::Clause &f, const int &c);
 
 #endif

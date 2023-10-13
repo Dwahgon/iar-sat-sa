@@ -5,32 +5,23 @@
 
 using namespace cnfsat;
 
-Literal::Literal(int i, bool negated)
-{
-  this->i = i;
-  this->negated = negated;
-}
-
-bool Literal::resolve(const std::vector<bool> &values)
-{
-  return (values[this->i] && !this->negated) ||
-         (!values[this->i] && this->negated);
-}
-
-Clause::Clause(std::vector<Literal> literals) { this->literals = literals; }
+Clause::Clause(const std::vector<int> &ls) : literals(ls) {}
 
 bool Clause::resolve(const std::vector<bool> &values)
 {
-  for (auto iter = this->literals.begin(); iter < this->literals.end();
-       iter++)
+  for (auto l : this->literals)
   {
-    if (iter->resolve(values))
+    auto v = values[abs(l) - 1];
+    if (v == (l > 0))
       return true;
   }
   return false;
 }
 
-Formula::Formula(std::vector<Clause> clauses) { this->clauses = clauses; }
+Formula::Formula(const std::vector<Clause> &clauses, unsigned int n) : nVars(n)
+{
+  this->clauses = clauses;
+}
 
 bool Formula::resolve(const std::vector<bool> &values)
 {
@@ -64,21 +55,14 @@ std::vector<bool> Formula::neighborhoodFunction(const std::vector<bool> &values)
   return res;
 }
 
-std::ostream &operator<<(std::ostream &strm, const Literal &a)
-{
-  if (a.negated)
-    strm << '!';
-  return strm << 'x' << a.i;
-}
-
 std::ostream &operator<<(std::ostream &strm, const Clause &a)
 {
   strm << '(';
-  for (auto iter = a.literals.begin(); iter < a.literals.end(); iter++)
+  for (auto it = a.literals.begin(); it < a.literals.end(); it++)
   {
-    if (iter != a.literals.begin())
+    if (it != a.literals.begin())
       strm << " | ";
-    strm << *iter;
+    strm << (*it < 0 ? "!" : "") << 'x' << abs(*it);
   }
   strm << ')';
   return strm;
@@ -93,4 +77,16 @@ std::ostream &operator<<(std::ostream &strm, const Formula &a)
     strm << *iter;
   }
   return strm;
+}
+
+Formula &operator<<(Formula &f, const Clause &c)
+{
+  f.clauses.push_back(c);
+  return f;
+}
+
+Clause &operator<<(Clause &c, const int i)
+{
+  c.literals.push_back(i);
+  return c;
 }
