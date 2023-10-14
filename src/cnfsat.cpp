@@ -25,12 +25,12 @@ Formula::Formula(const std::vector<Clause> &clauses, unsigned int n) : nVars(n)
 
 bool Formula::resolve(const std::vector<bool> &values)
 {
-  bool res = true;
   for (auto iter = this->clauses.begin(); iter < this->clauses.end(); iter++)
   {
-    res = res && iter->resolve(values);
+    if (!iter->resolve(values))
+      return false;
   }
-  return res;
+  return true;
 }
 
 double Formula::objectiveFunction(const std::vector<bool> &values)
