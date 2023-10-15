@@ -2,67 +2,61 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 
-void parse_args(Args *args, int argc, char **argv)
+void ArgumentsParser::addArgument(const Argument &arg)
 {
-    int i, *p_write_i = NULL;
-    unsigned int *p_write_ui = NULL;
-    double *p_write_d = NULL;
-    char **p_write_s = NULL;
-
-    args->coolingScheduleIndex = 1;
-    args->T0 = 100.0;
-    args->TN = 0.001;
-    args->SAmax = 100;
-    args->N = 100;
-
-    for (i = 1; i < argc; i++)
+    if (arg.argLetter == 'h')
     {
-        // Read n ants
-        if (p_write_i)
-        {
-            *p_write_i = atoi(argv[i]);
-            p_write_i = NULL;
-        }
-        if (p_write_ui)
-        {
-            *p_write_ui = (unsigned int)atol(argv[i]);
-            p_write_ui = NULL;
-        }
-        else if (p_write_d)
-        {
-            *p_write_d = atof(argv[i]);
-            p_write_d = NULL;
-        }
-        else if (p_write_s)
-        {
-            if (*p_write_s)
-                free(*p_write_s);
-            *p_write_s = (char *)malloc(strlen(argv[i]) * sizeof(char));
-            strcpy(*p_write_s, argv[i]);
-            p_write_s = NULL;
-        }
-
-        else if (!strcmp(argv[i], "-z"))
-            p_write_d = &args->T0;
-        else if (!strcmp(argv[i], "-f"))
-            p_write_d = &args->TN;
-        else if (!strcmp(argv[i], "-s"))
-            p_write_ui = &args->SAmax;
-        else if (!strcmp(argv[i], "-n"))
-            p_write_ui = &args->N;
-        else if (!strcmp(argv[i], "-i"))
-            p_write_ui = (unsigned int *)&args->coolingScheduleIndex;
-        else
-        {
-            printf("Argumento desconhecido: %s", argv[i]);
-            exit(1);
-        }
+        std::cerr << "Argument letter 'h' is reserved for the help command";
+        exit(1);
     }
+    this->args.emplace(std::make_pair(arg.name, arg));
+    this->argLetterToArgName.emplace(std::make_pair(arg.argLetter, arg.name));
+    if (!arg.argLong.empty())
+        this->argLongToArgName.emplace(std::make_pair("--" + arg.argLong, arg.name));
+}
 
-    // if (!args->filePath)
-    // {
-    //     args->filePath = calloc(strlen("./input.txt"), sizeof(char));
-    //     strcpy(args->filePath, "./input.txt");
-    // }
+void ArgumentsParser::printHelp()
+{
+    for (auto arg : this->args)
+    {
+        std::cout << '-' << arg.second.argLetter;
+        if (!arg.second.argLong.empty())
+            std::cout << " --" << arg.second.argLong;
+        std::cout << " : " << arg.second.name << std::endl;
+        std::cout << '\t' << arg.second.description << std::endl;
+    }
+}
+
+void ArgumentsParser::parseArgs(int argv, char **argc)
+{
+    for (int i = 1; i < argv; i++)
+    {
+        std::string arg(argc[i]);
+        if (arg == "-h" || arg == "--help")
+        {
+            this->printHelp();
+            exit(0);
+        }
+        if (this->argLetterToArgName.find(arg[1]) != this->argLetterToArgName.end())
+        {
+            Argument &argObj = this->args.at(this->argLetterToArgName.at(arg[1]));
+            argObj.value = argObj.isBool ? "1" : std::string(argc[++i]);
+            continue;
+        }
+        if (this->argLongToArgName.find(arg) != this->argLongToArgName.end())
+        {
+            Argument &argObj = this->args.at(this->argLongToArgName.at(arg));
+            argObj.value = argObj.isBool ? "1" : std::string(argc[++i]);
+            continue;
+        }
+        std::cout << "Unknown argument " << arg << std::endl;
+        exit(1);
+    }
+}
+
+std::string &ArgumentsParser::operator[](const std::string name)
+{
+    return this->args.at(name).value;
 }
