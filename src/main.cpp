@@ -1,5 +1,6 @@
 #include "cnfsat.h"
 #include "simulatedannealing.h"
+#include "randsearch.h"
 #include "utils.h"
 #include "dimacscnfparser.h"
 #include "parseargs.h"
@@ -9,6 +10,7 @@
 #include <string>
 
 using namespace cnfsat;
+using namespace opt;
 
 void configureArgParser(ArgumentsParser &argParser)
 {
@@ -30,6 +32,7 @@ int main(int argv, char **argc)
   Formula f = parseDimacsCnfFormula(std::cin);
   auto objFunc = std::bind(&Formula::objectiveFunction, &f, std::placeholders::_1);
   auto nFunc = std::bind(&Formula::neighborhoodFunction, &f, std::placeholders::_1);
+  auto randFunc = std::bind(randomBoolVector, (std::size_t)f.nVars);
   coolingSchedule c;
   switch (std::stoi(args["coolingScheduleIndex"]))
   {
@@ -67,22 +70,25 @@ int main(int argv, char **argc)
     break;
   }
   SimulatedAnnealing<bool> sa = SimulatedAnnealing<bool>(objFunc, nFunc, coolingSchedule1, std::stod(args["T0"]), std::stod(args["TN"]), std::stoi(args["SAmax"]), std::stoi(args["N"]));
+  RandomSearch<bool> rs = RandomSearch<bool>(objFunc, randFunc, std::stoi(args["N"]));
   std::vector<bool> initSolution = randomBoolVector(f.nVars);
 
-  std::cout << "Formula: " << f << std::endl;
-  std::cout << "Initial solution: " << std::endl
-            << "\t";
-  for (std::size_t i = 0; i < initSolution.size(); i++)
-    std::cout << "x" << i << " = " << initSolution[i] << "; ";
+  // std::cout << "Formula: " << f << std::endl;
+  // std::cout << "Initial solution: " << std::endl
+  //           << "\t";
+  // for (std::size_t i = 0; i < initSolution.size(); i++)
+  //   std::cout << "x" << i << " = " << initSolution[i] << "; ";
   std::cout << "\nInitial solution cost: " << f.objectiveFunction(initSolution) << std::endl;
 
-  std::vector<bool> res = sa.optimize(initSolution);
+  std::vector<bool> saRes = sa.optimize(initSolution);
+  std::vector<bool> rsRes = rs.optimize(initSolution);
 
-  std::cout << "Optimized solution: " << std::endl
-            << "\t";
-  for (std::size_t i = 0; i < res.size(); i++)
-    std::cout << "x" << i << " = " << res[i] << "; ";
-  std::cout << "\nOptimized solution cost: " << f.objectiveFunction(res) << std::endl;
+  // std::cout << "Optimized solution: " << std::endl
+  //           << "\t";
+  // for (std::size_t i = 0; i < res.size(); i++)
+  //   std::cout << "x" << i << " = " << res[i] << "; ";
+  std::cout << "Simulated Annealing solution cost: " << f.objectiveFunction(saRes) << std::endl;
+  std::cout << "Random Search solution cost: " << f.objectiveFunction(rsRes) << std::endl;
 
   return 0;
 }
