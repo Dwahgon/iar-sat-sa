@@ -46,12 +46,8 @@ double Formula::objectiveFunction(const std::vector<bool> &values)
 std::vector<bool> Formula::neighborhoodFunction(const std::vector<bool> &values)
 {
   std::vector<bool> res = values;
-  std::size_t i, size = res.size();
-  for (i = 0; i < size; i++)
-  {
-    if (0.5 > (float)rand() / (float)RAND_MAX)
-      res[i] = !res[i];
-  }
+  int randI = rand() % res.size();
+  res[randI] = !res[randI];
   return res;
 }
 
