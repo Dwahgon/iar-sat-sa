@@ -13,11 +13,12 @@ RandomSearch<T>::RandomSearch(objectiveFunction<T> f, randomSolutionGenerator<T>
 template RandomSearch<bool>::RandomSearch(objectiveFunction<bool> f, randomSolutionGenerator<bool> g, int N);
 
 template <typename T>
-std::vector<T> RandomSearch<T>::optimize(std::vector<T> s)
+std::vector<T> RandomSearch<T>::optimize(std::vector<T> s, std::ostream &os)
 {
     std::vector<T> sOut = s, sNew;
     double sOutFo = this->f(sOut), sNewFO;
     unsigned int i;
+    os << sOutFo << std::endl;
     for (i = 0; i < this->N; i++)
     {
         sNew = this->g();
@@ -27,7 +28,8 @@ std::vector<T> RandomSearch<T>::optimize(std::vector<T> s)
             sOut = sNew;
             sOutFo = sNewFO;
         }
+        os << sOutFo << std::endl;
     }
     return sOut;
 }
-template std::vector<bool> RandomSearch<bool>::optimize(std::vector<bool> s);
+template std::vector<bool> RandomSearch<bool>::optimize(std::vector<bool> s, std::ostream &os);

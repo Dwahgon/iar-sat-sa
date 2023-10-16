@@ -5,6 +5,8 @@
 #include "dimacscnfparser.h"
 #include "parseargs.h"
 #include <iostream>
+#include <ostream>
+#include <sstream>
 #include <functional>
 #include <stdlib.h>
 #include <string>
@@ -69,6 +71,7 @@ int main(int argv, char **argc)
   default:
     break;
   }
+  std::stringstream saOs, rsOs;
   SimulatedAnnealing<bool> sa = SimulatedAnnealing<bool>(objFunc, nFunc, coolingSchedule1, std::stod(args["T0"]), std::stod(args["TN"]), std::stoi(args["SAmax"]), std::stoi(args["N"]));
   RandomSearch<bool> rs = RandomSearch<bool>(objFunc, randFunc, std::stoi(args["N"]));
   std::vector<bool> initSolution = randomBoolVector(f.nVars);
@@ -78,17 +81,23 @@ int main(int argv, char **argc)
   //           << "\t";
   // for (std::size_t i = 0; i < initSolution.size(); i++)
   //   std::cout << "x" << i << " = " << initSolution[i] << "; ";
-  std::cout << "\nInitial solution cost: " << f.objectiveFunction(initSolution) << std::endl;
+  // std::cout << "\nInitial solution cost: " << f.objectiveFunction(initSolution) << std::endl;
 
-  std::vector<bool> saRes = sa.optimize(initSolution);
-  std::vector<bool> rsRes = rs.optimize(initSolution);
+  std::vector<bool> saRes = sa.optimize(initSolution, saOs);
+  std::vector<bool> rsRes = rs.optimize(initSolution, rsOs);
 
+  std::cout << "sa,rs\n";
+  std::string saOut, rsOut;
+  while (saOs >> saOut && rsOs >> rsOut)
+  {
+    std::cout << saOut << "," << rsOut << std::endl;
+  }
   // std::cout << "Optimized solution: " << std::endl
   //           << "\t";
   // for (std::size_t i = 0; i < res.size(); i++)
   //   std::cout << "x" << i << " = " << res[i] << "; ";
-  std::cout << "Simulated Annealing solution cost: " << f.objectiveFunction(saRes) << std::endl;
-  std::cout << "Random Search solution cost: " << f.objectiveFunction(rsRes) << std::endl;
+  // std::cout << "Simulated Annealing solution cost: " << f.objectiveFunction(saRes) << std::endl;
+  // std::cout << "Random Search solution cost: " << f.objectiveFunction(rsRes) << std::endl;
 
   return 0;
 }

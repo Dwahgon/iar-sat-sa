@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <functional>
+#include <ostream>
 #include "optimizers.h"
 
 namespace opt
@@ -23,7 +24,7 @@ namespace opt
 
     public:
         SimulatedAnnealing(objectiveFunction<T> f, neighborhoodFunction<T> n, coolingSchedule c, double T0, double TN, unsigned long SAmax, unsigned long N);
-        std::vector<T> optimize(std::vector<T> s);
+        std::vector<T> optimize(std::vector<T> s, std::ostream &os);
     };
 
     double coolingSchedule0(double T0, double TN, unsigned int N, unsigned int i);

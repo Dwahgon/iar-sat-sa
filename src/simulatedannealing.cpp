@@ -19,7 +19,7 @@ SimulatedAnnealing<T>::SimulatedAnnealing(objectiveFunction<T> f, neighborhoodFu
 template SimulatedAnnealing<bool>::SimulatedAnnealing(objectiveFunction<bool> f, neighborhoodFunction<bool> n, coolingSchedule c, double T0, double TN, unsigned long SAmax, unsigned long N);
 
 template <typename T>
-std::vector<T> SimulatedAnnealing<T>::optimize(std::vector<T> s)
+std::vector<T> SimulatedAnnealing<T>::optimize(std::vector<T> s, std::ostream &os)
 {
     std::vector<T> sStar = s;
     std::vector<T> sLine;
@@ -31,6 +31,7 @@ std::vector<T> SimulatedAnnealing<T>::optimize(std::vector<T> s)
     fs = f(s);
     fsStar = f(sStar);
 
+    os << fsStar << std::endl;
     for (i = 0; i < this->N; i++)
     {
         for (IterT = 0; IterT < this->SAmax; IterT++)
@@ -59,10 +60,11 @@ std::vector<T> SimulatedAnnealing<T>::optimize(std::vector<T> s)
             }
         }
         temp = this->c(this->T0, this->TN, this->N, i);
+        os << fsStar << std::endl;
     }
     return sStar;
 };
-template std::vector<bool> SimulatedAnnealing<bool>::optimize(std::vector<bool> s);
+template std::vector<bool> SimulatedAnnealing<bool>::optimize(std::vector<bool> s, std::ostream &os);
 
 double opt::coolingSchedule0(double T0, double TN, unsigned int N, unsigned int i)
 {

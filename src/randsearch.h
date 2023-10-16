@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <functional>
+#include <ostream>
 #include "optimizers.h"
 
 namespace opt
@@ -19,7 +20,7 @@ namespace opt
 
     public:
         RandomSearch(objectiveFunction<T> f, randomSolutionGenerator<T> g, int N);
-        std::vector<T> optimize(std::vector<T>);
+        std::vector<T> optimize(std::vector<T> s, std::ostream &os);
     };
 }
 
