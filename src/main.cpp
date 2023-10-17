@@ -86,7 +86,7 @@ int main(int argv, char **argc)
   std::vector<bool> saRes = sa.optimize(initSolution, saOs);
   std::vector<bool> rsRes = rs.optimize(initSolution, rsOs);
 
-  std::cout << "sa,rs\n";
+  std::cout << "sa_cost,sa_temp,rs\n";
   std::string saOut, rsOut;
   while (saOs >> saOut && rsOs >> rsOut)
   {

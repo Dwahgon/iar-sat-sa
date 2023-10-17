@@ -31,7 +31,7 @@ std::vector<T> SimulatedAnnealing<T>::optimize(std::vector<T> s, std::ostream &o
     fs = f(s);
     fsStar = f(sStar);
 
-    os << fsStar << std::endl;
+    os << fs << "," << temp << std::endl;
     for (i = 0; i < this->N; i++)
     {
         for (IterT = 0; IterT < this->SAmax; IterT++)
@@ -42,11 +42,11 @@ std::vector<T> SimulatedAnnealing<T>::optimize(std::vector<T> s, std::ostream &o
             if (delta < 0.0)
             {
                 s = sLine;
-                fs = f(s);
+                fs = fsLine;
                 if (fsLine < fsStar)
                 {
                     sStar = sLine;
-                    fsStar = f(sStar);
+                    fsStar = fsLine;
                 }
             }
             else
@@ -55,12 +55,12 @@ std::vector<T> SimulatedAnnealing<T>::optimize(std::vector<T> s, std::ostream &o
                 if (x < exp(-delta / temp))
                 {
                     s = sLine;
-                    fs = f(s);
+                    fs = fsLine;
                 }
             }
         }
         temp = this->c(this->T0, this->TN, this->N, i);
-        os << fsStar << std::endl;
+        os << fs << "," << temp << std::endl;
     }
     return sStar;
 };
