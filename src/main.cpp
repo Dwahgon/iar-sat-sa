@@ -72,7 +72,7 @@ int main(int argv, char **argc)
     break;
   }
   std::stringstream saOs, rsOs;
-  SimulatedAnnealing<bool> sa = SimulatedAnnealing<bool>(objFunc, nFunc, coolingSchedule1, std::stod(args["T0"]), std::stod(args["TN"]), std::stoi(args["SAmax"]), std::stoi(args["N"]));
+  SimulatedAnnealing<bool> sa = SimulatedAnnealing<bool>(objFunc, nFunc, c, std::stod(args["T0"]), std::stod(args["TN"]), std::stoi(args["SAmax"]), std::stoi(args["N"]));
   RandomSearch<bool> rs = RandomSearch<bool>(objFunc, randFunc, std::stoi(args["N"]));
   std::vector<bool> initSolution = randomBoolVector(f.nVars);
 
