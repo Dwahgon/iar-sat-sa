@@ -10,6 +10,7 @@
 #include <functional>
 #include <stdlib.h>
 #include <string>
+#include <random>
 
 using namespace cnfsat;
 using namespace opt;
@@ -26,10 +27,11 @@ void configureArgParser(ArgumentsParser &argParser)
 int main(int argv, char **argc)
 {
   ArgumentsParser args;
+  std::random_device r;
   configureArgParser(args);
   args.parseArgs(argv, argc);
 
-  srand(time(NULL));
+  srand(r());
 
   Formula f = parseDimacsCnfFormula(std::cin);
   auto objFunc = std::bind(&Formula::objectiveFunction, &f, std::placeholders::_1);
