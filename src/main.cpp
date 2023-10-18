@@ -88,11 +88,19 @@ int main(int argv, char **argc)
   std::vector<bool> saRes = sa.optimize(initSolution, saOs);
   std::vector<bool> rsRes = rs.optimize(initSolution, rsOs);
 
-  std::cout << "sa_cost,sa_temp,rs\n";
+  std::cout << "sa_cost,sa_temp,rs,,sa_final_cost,rs_final_cost\n";
   std::string saOut, rsOut;
+  bool printFinalCost = true;
   while (saOs >> saOut && rsOs >> rsOut)
   {
-    std::cout << saOut << "," << rsOut << std::endl;
+    std::cout << saOut << "," << rsOut;
+
+    if (printFinalCost)
+    {
+      printFinalCost = false;
+      std::cout << ",," << objFunc(saRes) << "," << objFunc(rsRes);
+    }
+    std::cout << std::endl;
   }
   // std::cout << "Optimized solution: " << std::endl
   //           << "\t";
