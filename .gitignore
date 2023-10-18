@@ -3,3 +3,4 @@ obj/
 .vscode/
 out-figures/
 out-csvs/
+.env
