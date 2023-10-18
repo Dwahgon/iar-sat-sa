@@ -23,7 +23,7 @@ std::vector<T> SimulatedAnnealing<T>::optimize(std::vector<T> s, std::ostream &o
 {
     std::vector<T> sStar = s;
     std::vector<T> sLine;
-    int x;
+    double x;
     unsigned int IterT, i;
     double temp = this->T0;
     double delta, fs, fsLine, fsStar;
